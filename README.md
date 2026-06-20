@@ -1,237 +1,128 @@
 # CausalFunnel User Analytics Dashboard
 
+## Live Demo
+
+Frontend:
+https://causal-funnel-user-analytics.vercel.app/
+
+Backend API:
+https://causalfunnel-backend-gnani.onrender.com/
+
+---
+
 ## Overview
 
-This project is a full-stack user analytics application built for the CausalFunnel Full Stack Engineer Assignment.
+CausalFunnel User Analytics Dashboard is a full-stack analytics platform that tracks user interactions on a website and visualizes behavioral insights through an interactive dashboard.
 
-The application tracks user interactions on a webpage, stores them in MongoDB Atlas, and visualizes user behavior through an analytics dashboard.
+The application captures events such as page views and clicks, stores them in MongoDB Atlas, and provides analytics including session tracking, event distribution, user journey visualization, top visited pages, and click heatmaps.
 
 ---
 
 ## Features
 
 ### Event Tracking
-
-- Page View Tracking
-- Click Tracking
-- Session Tracking
-- Timestamp Recording
-- Click Position (X, Y) Tracking
+- Track page views
+- Track click events
+- Store user interaction data in MongoDB Atlas
 
 ### Analytics Dashboard
+- Total Sessions
+- Total Events
+- Total Clicks
+- Total Page Views
 
-- View All Sessions
-- Session-wise Event Counts
-- User Journey Visualization
-- Heatmap Visualization
+### User Journey Analysis
+- Session-wise event history
+- Chronological user activity timeline
+- Session search functionality
 
-### Database
+### Visualization
+- Event distribution charts
+- Click heatmap visualization
+- Top visited pages analytics
 
-- MongoDB Atlas Integration
-- Event Storage
-- Session-based Analytics
+### Deployment
+- Frontend deployed on Vercel
+- Backend deployed on Render
+- Database hosted on MongoDB Atlas
 
 ---
 
 ## Tech Stack
 
 ### Frontend
-
 - React.js
 - Axios
+- Recharts
 
 ### Backend
-
 - Node.js
 - Express.js
 
 ### Database
-
 - MongoDB Atlas
 - Mongoose
 
+### Deployment
+- Vercel
+- Render
+
 ---
 
-## Project Structure
+## Architecture
 
-```text
-CausalFunnel_Assignment
-│
-├── backend
-│   ├── models
-│   │   └── Event.js
-│   ├── routes
-│   │   └── eventRoutes.js
-│   ├── server.js
-│   └── package.json
-│
-├── frontend
-│   ├── public
-│   │   └── tracker.js
-│   ├── src
-│   │   └── App.js
-│   └── package.json
-│
-└── README.md
-```
+User Browser
+↓
+React Frontend
+↓
+Express Backend API
+↓
+MongoDB Atlas Database
 
 ---
 
 ## API Endpoints
 
-### POST /api/events
-
-Stores user events.
-
-#### Request Body
-
-```json
-{
-  "session_id": "session123",
-  "event_type": "click",
-  "page_url": "http://localhost:3000",
-  "x": 150,
-  "y": 300
-}
-```
+| Method | Endpoint | Description |
+|----------|----------|----------|
+| POST | /api/events | Save event |
+| GET | /api/sessions | Get all sessions |
+| GET | /api/session/:id | Get session events |
+| GET | /api/heatmap | Get click heatmap data |
+| GET | /api/stats | Dashboard statistics |
+| GET | /api/event-distribution | Event distribution |
+| GET | /api/top-pages | Most visited pages |
 
 ---
 
-### GET /api/sessions
+## Dashboard Analytics
 
-Returns all sessions with total event counts.
-
-#### Example Response
-
-```json
-[
-  {
-    "_id": "session123",
-    "totalEvents": 10
-  }
-]
-```
-
----
-
-### GET /api/session/:id
-
-Returns all events belonging to a session.
-
----
-
-### GET /api/heatmap?page=<url>
-
-Returns click coordinates used for heatmap visualization.
-
----
-
-## Setup Instructions
-
-### Clone Repository
-
-```bash
-git clone https://github.com/prakashiitj/CausalFunnel-User-Analytics.git
-cd CausalFunnel-User-Analytics
-```
-
----
-
-## Backend Setup
-
-```bash
-cd backend
-npm install
-```
-
-Create a `.env` file:
-
-```env
-MONGO_URI=your_mongodb_connection_string
-PORT=5000
-```
-
-Start Backend Server:
-
-```bash
-node server.js
-```
-
-Expected Output:
-
-```text
-MongoDB Connected
-Server running on port 5000
-```
-
----
-
-## Frontend Setup
-
-```bash
-cd frontend
-npm install
-npm start
-```
-
-Application runs on:
-
-```text
-http://localhost:3000
-```
-
----
-
-## Tracker Script
-
-The project includes a lightweight tracking script:
-
-```text
-frontend/public/tracker.js
-```
-
-The tracker automatically records:
-
-- Page Views
-- Click Events
-- Session IDs
-- Timestamps
-- Click Coordinates
-
-and sends them to the backend API.
-
----
-
-## Assumptions
-
-- Session IDs are stored using browser localStorage.
-- Click heatmaps are generated using X/Y click coordinates.
-- MongoDB Atlas is used as the cloud database.
-- The tracker runs automatically when the webpage loads.
-
----
-
-## Screenshots
-
-### Dashboard
+The dashboard provides:
 
 - Session Analytics
-- User Journey View
-- Heatmap View
+- Event Distribution Analysis
+- User Journey Tracking
+- Click Heatmap Visualization
+- Top Pages Analysis
+- Real-time Interaction Monitoring
 
 ---
 
-## Repository
+## Future Improvements
 
-GitHub Repository:
-
-https://github.com/prakashiitj/CausalFunnel-User-Analytics
+- Real-time analytics using WebSockets
+- Conversion funnel analysis
+- Device and browser analytics
+- User retention tracking
+- Geographic analytics
+- Advanced dashboard filters
 
 ---
 
 ## Author
 
-**Gnani Prakash Yaddanapudi**
+Gnani Prakash Yaddanapudi
 
-IIT Jodhpur  
+Indian Institute of Technology Jodhpur
+
 Computer Science & Engineering
