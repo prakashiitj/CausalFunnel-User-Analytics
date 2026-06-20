@@ -29,7 +29,7 @@
     sendEvent({
       session_id: sessionId,
       event_type: "click",
-      page_url: window.location.href,
+      page_url: window.location.origin + window.location.pathname,
       timestamp: new Date(),
       x: e.clientX,
       y: e.clientY,
