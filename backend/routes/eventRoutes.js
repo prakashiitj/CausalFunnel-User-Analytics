@@ -27,7 +27,14 @@ router.get("/sessions", async (req, res) => {
       {
         $group: {
           _id: "$session_id",
-          totalEvents: { $sum: 1 }
+          totalEvents: { $sum: 1 },
+          lastActivity: { $max: "$timestamp" }
+        }
+      },
+      {
+        $sort: {
+          totalEvents: -1,
+          lastActivity: -1
         }
       }
     ]);
@@ -66,6 +73,87 @@ router.get("/heatmap", async (req, res) => {
     });
 
     res.json(clicks);
+  } catch (err) {
+    res.status(500).json({
+      error: err.message
+    });
+  }
+});
+
+// Analytics Overview
+router.get("/stats", async (req, res) => {
+  try {
+    const totalEvents = await Event.countDocuments();
+
+    const totalSessions = await Event.distinct("session_id");
+
+    const totalClicks = await Event.countDocuments({
+      event_type: "click"
+    });
+
+    const totalPageViews = await Event.countDocuments({
+      event_type: "page_view"
+    });
+
+    res.json({
+      totalEvents,
+      totalSessions: totalSessions.length,
+      totalClicks,
+      totalPageViews
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: err.message
+    });
+  }
+});
+
+// Event Type Distribution
+router.get("/event-distribution", async (req, res) => {
+  try {
+    const distribution = await Event.aggregate([
+      {
+        $group: {
+          _id: "$event_type",
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: {
+          count: -1
+        }
+      }
+    ]);
+
+    res.json(distribution);
+  } catch (err) {
+    res.status(500).json({
+      error: err.message
+    });
+  }
+});
+
+// Top Pages
+router.get("/top-pages", async (req, res) => {
+  try {
+    const pages = await Event.aggregate([
+      {
+        $group: {
+          _id: "$page_url",
+          visits: { $sum: 1 }
+        }
+      },
+      {
+        $sort: {
+          visits: -1
+        }
+      },
+      {
+        $limit: 5
+      }
+    ]);
+
+    res.json(pages);
   } catch (err) {
     res.status(500).json({
       error: err.message

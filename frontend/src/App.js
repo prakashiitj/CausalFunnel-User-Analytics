@@ -1,35 +1,54 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 function App() {
   const [sessions, setSessions] = useState([]);
   const [events, setEvents] = useState([]);
   const [heatmapData, setHeatmapData] = useState([]);
+  const [stats, setStats] = useState({});
+  const [distribution, setDistribution] = useState([]);
+  const [topPages, setTopPages] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchSessions();
+
+    axios
+      .get("http://localhost:5000/api/stats")
+      .then((res) => setStats(res.data))
+      .catch(console.error);
+
+    axios
+      .get("http://localhost:5000/api/event-distribution")
+      .then((res) => setDistribution(res.data))
+      .catch(console.error);
+
+    axios
+      .get("http://localhost:5000/api/top-pages")
+      .then((res) => setTopPages(res.data))
+      .catch(console.error);
   }, []);
 
   const fetchSessions = () => {
     axios
       .get("http://localhost:5000/api/sessions")
-      .then((res) => {
-        setSessions(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      .then((res) => setSessions(res.data))
+      .catch(console.error);
   };
 
   const loadSessionEvents = (sessionId) => {
     axios
       .get(`http://localhost:5000/api/session/${sessionId}`)
-      .then((res) => {
-        setEvents(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      .then((res) => setEvents(res.data))
+      .catch(console.error);
   };
 
   const loadHeatmap = () => {
@@ -37,75 +56,172 @@ function App() {
       .get(
         "http://localhost:5000/api/heatmap?page=http://localhost:3000"
       )
-      .then((res) => {
-        setHeatmapData(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      .then((res) => setHeatmapData(res.data))
+      .catch(console.error);
   };
 
   return (
     <div
       style={{
-        padding: "20px",
-        maxWidth: "1200px",
-        margin: "0 auto",
+        background: "#f4f6f8",
+        minHeight: "100vh",
+        padding: "30px",
         fontFamily: "Arial, sans-serif",
       }}
     >
-      <h1>CausalFunnel User Analytics Dashboard</h1>
+      <h1>CausalFunnel Analytics Dashboard</h1>
 
-      <p
+      {/* Analytics Cards */}
+
+      <div
         style={{
-          fontSize: "18px",
-          fontWeight: "bold",
+          display: "flex",
+          gap: "20px",
+          marginBottom: "30px",
+          flexWrap: "wrap",
         }}
       >
-        Total Sessions: {sessions.length}
-      </p>
+        <div style={cardStyle}>
+          <h2>{stats.totalSessions || 0}</h2>
+          <p>Total Sessions</p>
+        </div>
+
+        <div style={cardStyle}>
+          <h2>{stats.totalEvents || 0}</h2>
+          <p>Total Events</p>
+        </div>
+
+        <div style={cardStyle}>
+          <h2>{stats.totalClicks || 0}</h2>
+          <p>Total Clicks</p>
+        </div>
+
+        <div style={cardStyle}>
+          <h2>{stats.totalPageViews || 0}</h2>
+          <p>Page Views</p>
+        </div>
+      </div>
+
+      {/* Event Distribution */}
+
+      <div
+        style={{
+          background: "white",
+          padding: "20px",
+          borderRadius: "12px",
+          marginBottom: "30px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        }}
+      >
+        <h2>Event Distribution</h2>
+
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={distribution}>
+            <XAxis dataKey="_id" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="count" fill="#2563eb" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Top Pages */}
+
+      <div
+        style={{
+          background: "white",
+          padding: "20px",
+          borderRadius: "12px",
+          marginBottom: "30px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        }}
+      >
+        <h2>Top Pages</h2>
+
+        {topPages.length === 0 ? (
+          <p>No page data available</p>
+        ) : (
+          topPages.map((page) => (
+            <div
+              key={page._id}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: "10px 0",
+                borderBottom: "1px solid #eee",
+              }}
+            >
+              <span>{page._id}</span>
+              <strong>{page.visits} visits</strong>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Search */}
+
+      <input
+        type="text"
+        placeholder="Search Session ID"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        style={{
+          padding: "10px",
+          width: "300px",
+          marginBottom: "20px",
+          borderRadius: "8px",
+          border: "1px solid #ccc",
+        }}
+      />
 
       <h2>Sessions</h2>
 
-      {sessions.map((session) => (
-        <div
-          key={session._id}
-          onClick={() => loadSessionEvents(session._id)}
-          style={{
-            border: "1px solid #ddd",
-            borderRadius: "10px",
-            padding: "15px",
-            marginBottom: "10px",
-            cursor: "pointer",
-            boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-          }}
-        >
-          <p>
-            <strong>Session ID:</strong> {session._id}
-          </p>
+      {sessions
+        .filter((session) =>
+          session._id.toLowerCase().includes(search.toLowerCase())
+        )
+        .map((session) => (
+          <div
+            key={session._id}
+            onClick={() => loadSessionEvents(session._id)}
+            style={{
+              background: "white",
+              padding: "15px",
+              marginBottom: "12px",
+              borderRadius: "10px",
+              cursor: "pointer",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+            }}
+          >
+            <p>
+              <strong>Session ID:</strong> {session._id}
+            </p>
 
-          <p>
-            <strong>Total Events:</strong> {session.totalEvents}
-          </p>
-
-          <p>Click to view user journey</p>
-        </div>
-      ))}
+            <p>
+              <strong>Total Events:</strong> {session.totalEvents}
+            </p>
+          </div>
+        ))}
 
       <button
         onClick={loadHeatmap}
         style={{
-          padding: "10px 20px",
-          marginBottom: "20px",
-          cursor: "pointer",
-          borderRadius: "5px",
+          padding: "12px 20px",
           border: "none",
+          borderRadius: "8px",
+          cursor: "pointer",
+          background: "#2563eb",
+          color: "white",
+          marginTop: "20px",
+          marginBottom: "20px",
         }}
       >
         Refresh Heatmap
       </button>
 
-      <h2>User Journey</h2>
+      {/* User Journey */}
+
+      <h2>User Journey Timeline</h2>
 
       {events.length === 0 ? (
         <p>Select a session above</p>
@@ -114,44 +230,44 @@ function App() {
           <div
             key={event._id}
             style={{
-              border: "1px solid #ddd",
-              borderRadius: "8px",
-              padding: "10px",
-              marginBottom: "8px",
+              background: "white",
+              padding: "12px",
+              marginBottom: "10px",
+              borderRadius: "10px",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
             }}
           >
             <p>
-              <strong>Type:</strong> {event.event_type}
+              <strong>{event.event_type}</strong>
             </p>
+
+            <p>{event.page_url}</p>
 
             <p>
-              <strong>Page:</strong> {event.page_url}
+              {new Date(event.timestamp).toLocaleTimeString()}
             </p>
 
-            <p>
-              <strong>Time:</strong>{" "}
-              {new Date(event.timestamp).toLocaleString()}
-            </p>
-
-            {event.x !== undefined && event.y !== undefined && (
+            {event.x !== undefined && (
               <p>
-                <strong>Position:</strong> ({event.x}, {event.y})
+                Position: ({event.x}, {event.y})
               </p>
             )}
           </div>
         ))
       )}
 
+      {/* Heatmap */}
+
       <h2>Heatmap View</h2>
 
       <div
         style={{
-          width: "800px",
+          width: "900px",
           height: "500px",
-          border: "2px solid black",
+          border: "2px solid #333",
+          background: "white",
           position: "relative",
-          marginTop: "20px",
-          backgroundColor: "#f9f9f9",
+          borderRadius: "10px",
         }}
       >
         {heatmapData.map((click) => (
@@ -159,13 +275,14 @@ function App() {
             key={click._id}
             title={`(${click.x}, ${click.y})`}
             style={{
-              width: "12px",
-              height: "12px",
+              width: "14px",
+              height: "14px",
               borderRadius: "50%",
-              backgroundColor: "red",
+              background: "red",
               position: "absolute",
               left: `${click.x}px`,
               top: `${click.y}px`,
+              opacity: 0.7,
             }}
           />
         ))}
@@ -173,5 +290,14 @@ function App() {
     </div>
   );
 }
+
+const cardStyle = {
+  background: "white",
+  padding: "20px",
+  borderRadius: "12px",
+  minWidth: "180px",
+  textAlign: "center",
+  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+};
 
 export default App;
