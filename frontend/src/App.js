@@ -9,6 +9,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+const API_URL = "https://causalfunnel-backend-gnani.onrender.com";
+
 function App() {
   const [sessions, setSessions] = useState([]);
   const [events, setEvents] = useState([]);
@@ -22,31 +24,31 @@ function App() {
     fetchSessions();
 
     axios
-      .get("http://localhost:5000/api/stats")
+      .get(`${API_URL}/api/stats`)
       .then((res) => setStats(res.data))
       .catch(console.error);
 
     axios
-      .get("http://localhost:5000/api/event-distribution")
+      .get(`${API_URL}/api/event-distribution`)
       .then((res) => setDistribution(res.data))
       .catch(console.error);
 
     axios
-      .get("http://localhost:5000/api/top-pages")
+      .get(`${API_URL}/api/top-pages`)
       .then((res) => setTopPages(res.data))
       .catch(console.error);
   }, []);
 
   const fetchSessions = () => {
     axios
-      .get("http://localhost:5000/api/sessions")
+      .get(`${API_URL}/api/sessions`)
       .then((res) => setSessions(res.data))
       .catch(console.error);
   };
 
   const loadSessionEvents = (sessionId) => {
     axios
-      .get(`http://localhost:5000/api/session/${sessionId}`)
+      .get(`${API_URL}/api/session/${sessionId}`)
       .then((res) => setEvents(res.data))
       .catch(console.error);
   };
@@ -54,7 +56,7 @@ function App() {
   const loadHeatmap = () => {
     axios
       .get(
-        "http://localhost:5000/api/heatmap?page=http://localhost:3000"
+        `${API_URL}/api/heatmap?page=http://localhost:3000/`
       )
       .then((res) => setHeatmapData(res.data))
       .catch(console.error);
@@ -72,7 +74,6 @@ function App() {
       <h1>CausalFunnel Analytics Dashboard</h1>
 
       {/* Analytics Cards */}
-
       <div
         style={{
           display: "flex",
@@ -103,7 +104,6 @@ function App() {
       </div>
 
       {/* Event Distribution */}
-
       <div
         style={{
           background: "white",
@@ -126,7 +126,6 @@ function App() {
       </div>
 
       {/* Top Pages */}
-
       <div
         style={{
           background: "white",
@@ -159,7 +158,6 @@ function App() {
       </div>
 
       {/* Search */}
-
       <input
         type="text"
         placeholder="Search Session ID"
@@ -220,7 +218,6 @@ function App() {
       </button>
 
       {/* User Journey */}
-
       <h2>User Journey Timeline</h2>
 
       {events.length === 0 ? (
@@ -243,9 +240,7 @@ function App() {
 
             <p>{event.page_url}</p>
 
-            <p>
-              {new Date(event.timestamp).toLocaleTimeString()}
-            </p>
+            <p>{new Date(event.timestamp).toLocaleTimeString()}</p>
 
             {event.x !== undefined && (
               <p>
@@ -257,7 +252,6 @@ function App() {
       )}
 
       {/* Heatmap */}
-
       <h2>Heatmap View</h2>
 
       <div
