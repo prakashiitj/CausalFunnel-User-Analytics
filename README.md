@@ -120,13 +120,17 @@ The dashboard provides:
 ---
 ## Dashboard Preview
 
-### Analytics Overview
+### Dashboard Overview
 
 ![Dashboard](screenshots/dashboard.png)
 
-### Event Analytics
+### Analytics Overview
 
-![Analytics](screenshots/analytics.png/analytics(1).png)
+![Analytics](screenshots/analytics.png)
+
+### Session Analytics & User Journey
+
+![Analytics 2](screenshots/analytics(1).png)
 
 ### Heatmap Visualization
 
