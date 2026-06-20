@@ -54,13 +54,13 @@ function App() {
   };
 
   const loadHeatmap = () => {
-    axios
-      .get(
-        `${API_URL}/api/heatmap?page=http://localhost:3000/`
-      )
-      .then((res) => setHeatmapData(res.data))
-      .catch(console.error);
-  };
+  axios
+    .get(
+      "https://causalfunnel-backend-gnani.onrender.com/api/heatmap"
+    )
+    .then((res) => setHeatmapData(res.data))
+    .catch(console.error);
+};
 
   return (
     <div

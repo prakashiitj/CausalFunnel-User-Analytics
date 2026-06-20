@@ -11,11 +11,11 @@ router.post("/events", async (req, res) => {
     await event.save();
 
     res.status(201).json({
-      message: "Event saved successfully"
+      message: "Event saved successfully",
     });
   } catch (err) {
     res.status(500).json({
-      error: err.message
+      error: err.message,
     });
   }
 });
@@ -28,21 +28,21 @@ router.get("/sessions", async (req, res) => {
         $group: {
           _id: "$session_id",
           totalEvents: { $sum: 1 },
-          lastActivity: { $max: "$timestamp" }
-        }
+          lastActivity: { $max: "$timestamp" },
+        },
       },
       {
         $sort: {
           totalEvents: -1,
-          lastActivity: -1
-        }
-      }
+          lastActivity: -1,
+        },
+      },
     ]);
 
     res.json(sessions);
   } catch (err) {
     res.status(500).json({
-      error: err.message
+      error: err.message,
     });
   }
 });
@@ -51,31 +51,28 @@ router.get("/sessions", async (req, res) => {
 router.get("/session/:id", async (req, res) => {
   try {
     const events = await Event.find({
-      session_id: req.params.id
+      session_id: req.params.id,
     }).sort({ timestamp: 1 });
 
     res.json(events);
   } catch (err) {
     res.status(500).json({
-      error: err.message
+      error: err.message,
     });
   }
 });
 
-// Heatmap data
+// Heatmap Data (ALL clicks)
 router.get("/heatmap", async (req, res) => {
   try {
-    const page = req.query.page;
-
     const clicks = await Event.find({
-      page_url: page,
-      event_type: "click"
+      event_type: "click",
     });
 
     res.json(clicks);
   } catch (err) {
     res.status(500).json({
-      error: err.message
+      error: err.message,
     });
   }
 });
@@ -88,22 +85,22 @@ router.get("/stats", async (req, res) => {
     const totalSessions = await Event.distinct("session_id");
 
     const totalClicks = await Event.countDocuments({
-      event_type: "click"
+      event_type: "click",
     });
 
     const totalPageViews = await Event.countDocuments({
-      event_type: "page_view"
+      event_type: "page_view",
     });
 
     res.json({
       totalEvents,
       totalSessions: totalSessions.length,
       totalClicks,
-      totalPageViews
+      totalPageViews,
     });
   } catch (err) {
     res.status(500).json({
-      error: err.message
+      error: err.message,
     });
   }
 });
@@ -115,20 +112,20 @@ router.get("/event-distribution", async (req, res) => {
       {
         $group: {
           _id: "$event_type",
-          count: { $sum: 1 }
-        }
+          count: { $sum: 1 },
+        },
       },
       {
         $sort: {
-          count: -1
-        }
-      }
+          count: -1,
+        },
+      },
     ]);
 
     res.json(distribution);
   } catch (err) {
     res.status(500).json({
-      error: err.message
+      error: err.message,
     });
   }
 });
@@ -140,23 +137,23 @@ router.get("/top-pages", async (req, res) => {
       {
         $group: {
           _id: "$page_url",
-          visits: { $sum: 1 }
-        }
+          visits: { $sum: 1 },
+        },
       },
       {
         $sort: {
-          visits: -1
-        }
+          visits: -1,
+        },
       },
       {
-        $limit: 5
-      }
+        $limit: 5,
+      },
     ]);
 
     res.json(pages);
   } catch (err) {
     res.status(500).json({
-      error: err.message
+      error: err.message,
     });
   }
 });
