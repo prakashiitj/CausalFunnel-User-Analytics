@@ -118,7 +118,19 @@ The dashboard provides:
 - Advanced dashboard filters
 
 ---
+## Dashboard Preview
 
+### Analytics Overview
+
+![Dashboard](screenshots/dashboard.png)
+
+### Event Analytics
+
+![Analytics](screenshots/analytics.png/analytics(1).png)
+
+### Heatmap Visualization
+
+![Heatmap](screenshots/heatmap.png)
 ## Author
 
 Gnani Prakash Yaddanapudi
